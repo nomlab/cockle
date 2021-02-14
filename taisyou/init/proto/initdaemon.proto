@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "github.com/takaie0214/initdaemon/proto";
+
+package initdaemon;
+
+service InitDaemon {
+    rpc RunPhauls(ServerInfo) returns (Result) {}
+    rpc RunPhaulc(ClientInfo) returns (Result) {}
+}
+
+message ServerInfo {
+    string target = 1;
+    string servicename = 2;
+}
+
+message ClientInfo {
+    string target = 1;
+    string servicename = 2;
+    string addr = 3;
+}
+
+message Result {
+    int32 res = 1;
+}

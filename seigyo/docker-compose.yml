@@ -1,0 +1,14 @@
+version: '2'
+services:
+    teiansys:
+        image: seigyo
+        container_name: seigyo
+        command: "python /root/main.py --composefile /root/scripts/docker-compose.yml --conffile /root/scripts/conf --check /root/scripts/wait_for_running.sh --test /root/scripts/testscript.sh"
+        dns: 192.168.16.3
+        volumes:
+            - ./scripts:/root/scripts
+
+networks:
+  default:
+      external:
+            name: taisyou_test_network

@@ -1,0 +1,8 @@
+. {
+    etcd test {
+            path /skydns
+            endpoint http://{$ETCD_IP}:4001
+    }
+    proxy . /etc/resolv.conf
+    log
+}

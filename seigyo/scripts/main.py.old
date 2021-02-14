@@ -1,0 +1,99 @@
+import argparse
+import yaml
+import urllib3
+import time
+
+import grpc
+import initdaemon_pb2
+import initdaemon_pb2_grpc
+
+def wait_for_running(sIP, cIP):
+    http = urllib3.PoolManager()
+    while True:
+        try:
+            url ='http://' + sIP + ':9000'
+            http = urllib3.PoolManager()
+            response=http.request('GET', url)
+            print("s:", response.status)
+        except urllib3.exceptions.HTTPError as e:
+            print('sRequest failed:', e.reason)
+            continue
+
+        try:
+            url ='http://' + cIP + ':8081'
+            http = urllib3.PoolManager()
+            response=http.request('GET', url)
+            print("c:", response.status)
+        except urllib3.exceptions.HTTPError as e:
+            print('cRequest failed:', e.reason)
+            continue
+        break
+
+    #f = open(args.composefile, "r")
+    #composefile = yaml.load(f, Loader=yaml.SafeLoader)
+    #hosts = composefile['services'].keys() 
+    #f.close()
+
+    #while len(hosts) != 0:
+    #    for host in hosts:
+    #        url = "http://${HOSTNAME}/health"
+    #        try:
+    #            with urllib.request.urlopen(url):
+    #                hosts.remove(host)
+
+    #        except:
+    #            time.sleep(1)
+    #            print(".", end="")
+    #            break
+    #print("system running")
+
+def run_end2end_test():
+    url = "http://${HOSTNAME}/index.html"
+
+    try:
+        urllib3.request.urlopen(url)
+    except urllib3.error.URLError as e:
+        print(e.reason)
+     
+def tear_down(): 
+    print("AAA")
+
+def construct(serverIP, clientIP, service):
+    sip = serverIP + ":50051"
+    cip = clientIP + ":50051"
+    print(sip)
+
+    with grpc.insecure_channel(sip) as channel:
+        stub = initdaemon_pb2_grpc.InitDaemonStub(channel)
+        stub.RunPhauls(initdaemon_pb2.ServerInfo(target=service , servicename = service))
+
+    with grpc.insecure_channel(cip) as channel:
+        stub = initdaemon_pb2_grpc.InitDaemonStub(channel)
+        stub.RunPhaulc(initdaemon_pb2.ClientInfo(target=service, servicename = service, addr = serverIP))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--composefile")
+    parser.add_argument("--conffile")
+    parser.add_argument("--sip")
+    parser.add_argument("--cip")
+    parser.add_argument("--servicename")
+    args = parser.parse_args()
+
+    print(args.sip)
+
+    #f = open(args.conffile, "r")
+    #line = f.readline()
+
+    wait_for_running(args.sip, args.cip)
+    #while line:
+    construct(args.sip, args.cip, args.servicename)
+
+#    wait_for_running(args.sip, args.cip)
+#    run_end2end_test()
+
+#    tear_down()
+#    line = f.readline()
+
+#    f.close()

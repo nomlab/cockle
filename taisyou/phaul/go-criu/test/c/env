@@ -1,0 +1,10 @@
+export PATH=/usr/local/sbin:/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+export GOROOT="/usr/bin/"
+export GOENV_ROOT="/home/vagrant/.goenv"
+export PATH="$GOENV_ROOT/bin:$PATH"
+eval "$(goenv init -)"
+export PATH="$GOROOT/bin:$PATH"
+export PATH="$PATH:$GOPATH/bin"
+export PAHT="$PATH:/home/vagrant/.local/bin"
+export GOPATH="/home/vagrant/go/1.14.6"
+
