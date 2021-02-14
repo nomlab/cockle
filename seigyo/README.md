@@ -1,18 +1,18 @@
 # Disc
-コンテナ環境で動くプロセスの分散配置を設定ファイルに基づいて動的に変更して，ベンチマークを取っていく
-
-# Setting
-+ scripts/wait_for_running
-
+構成変更の実行タイミング制御したりベンチマークとったりする
 
 # Run
-+ 対象システムをまず起動．(所属するネットワークを
-
-+ run.shとかあるけど，汎用的なものではありません．
-`$ docker run -it --rm -v <scriptがあるディレクトリ>:/root/scripts --net="<対象の属するネットワーク>" --dns="<対象のシステムにたてたDNSのIP>" <このコンテナのイメージ名> /bin/bash -c 'python /root/main.py --composefile /root/scripts/docker-compose.yml --conffile /root/scripts/conf --check /root/scripts/wait_for_running.sh --test /root/scripts/testscript.sh'`
-
-
++ 対象システムをまず起動してから
+```
+docker-compose up -d
+```
+# how it work (simply)
++ 構成の設定ファイル読む(scripts/conf)
+  + 1行づつよんで，カンマで3個に区切れる場合はこれに従った構成に変更．そうでない場合はそのままの構成．
++ システムの起動をまつ (scripts/wait_for_runnning.sh実行)
++ 構成変更の指示（対象コンテナのinitにgRPCで要求)
++ ベンチマーク取得 (scripts/testscript.shの実行)
++ 構成変更，ベンチマーク取得の繰り返し
 
 # Note
-+ 力技で解決していること，そもそも解決していないことがおおい．
-+ よく失敗する．
++ 色々できていないところおおい
